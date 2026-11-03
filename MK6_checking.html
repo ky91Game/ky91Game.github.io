@@ -12,11 +12,23 @@
         html {
             /* 動態視窗比例縮放：手機維持 16px，隨螢幕加寬平滑放大，最高限制至 24px (1.5倍大) */
             font-size: clamp(16px, 2.5vw, 24px);
+            touch-action: manipulation;
         }
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        /* 防止快速點擊 + / - 號時觸發瀏覽器縮放或選取文字 */
+        button, input, select, textarea {
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        input[type="text"], input[type="number"] {
+            -webkit-user-select: auto;
+            user-select: auto;
         }
         /* Custom scrollbar for a cleaner look */
         ::-webkit-scrollbar {
@@ -669,11 +681,18 @@
             let calcCombos = 0;
             let errorMsg = '';
             if (state.calcBankers + state.calcLegs < 6) {
-                errorMsg = '* 膽和腳的總數必須最少為6個';
+                errorMsg = state.calcLegs === 0 ? '* 號碼總數最少為 6 個' : '* 膽和腳的總數必須最少為 6 個';
+            } else if (state.calcLegs === 0) {
+                // 當「腳」為 0 時，膽數大於等於 6 視為複式計算
+                calcCombos = getCombinations(state.calcBankers, 6);
             } else if (state.calcBankers === 0) {
                 calcCombos = getCombinations(state.calcLegs, 6);
             } else {
-                calcCombos = getCombinations(state.calcLegs, 6 - state.calcBankers);
+                if (state.calcBankers > 5) {
+                    errorMsg = '* 膽拖投注「膽」最多只可選 5 個';
+                } else {
+                    calcCombos = getCombinations(state.calcLegs, 6 - state.calcBankers);
+                }
             }
             const calcTotalCost = calcCombos * state.calcUnitCost;
 
@@ -690,20 +709,23 @@
                             <h3 class="font-bold text-gray-700 mb-4 flex items-center"><i class="ph ph-math-operations mr-1.5 text-blue-600"></i> 自訂注數計算</h3>
                             
                             <div class="flex items-center justify-between mb-4 bg-gray-50 p-2.5 rounded-lg">
-                                <span class="text-sm font-bold text-gray-700">膽 (Bankers)</span>
+                                <div>
+                                    <span class="text-sm font-bold text-gray-700">膽 (Bankers)</span>
+                                    ${state.calcLegs === 0 ? '<span class="text-[0.6875rem] text-blue-600 font-bold ml-1.5">(無腳時為複式)</span>' : ''}
+                                </div>
                                 <div class="flex items-center space-x-3">
-                                    <button onclick="if(state.calcBankers>0){state.calcBankers--; window.renderApp();}" class="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 shadow-sm transition-colors shrink-0"><i class="ph ph-minus"></i></button>
+                                    <button onclick="window.decrementCalcBankers()" class="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 shadow-sm transition-colors shrink-0"><i class="ph ph-minus"></i></button>
                                     <input type="number" inputmode="numeric" value="${state.calcBankers}" onblur="window.setCalcBankers(this.value)" onkeydown="if(event.key === 'Enter') this.blur()" class="w-12 text-center font-bold text-blue-600 bg-white border border-gray-200 rounded-md py-1 outline-none focus:border-blue-500 shadow-inner" style="-moz-appearance: textfield;" />
-                                    <button onclick="if(state.calcBankers<5){state.calcBankers++; window.renderApp();}" class="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 shadow-sm transition-colors shrink-0"><i class="ph ph-plus"></i></button>
+                                    <button onclick="window.incrementCalcBankers()" class="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 shadow-sm transition-colors shrink-0"><i class="ph ph-plus"></i></button>
                                 </div>
                             </div>
                             
                             <div class="flex items-center justify-between mb-4 bg-gray-50 p-2.5 rounded-lg">
                                 <span class="text-sm font-bold text-gray-700">腳 (Legs)</span>
                                 <div class="flex items-center space-x-3">
-                                    <button onclick="if(state.calcLegs>0){state.calcLegs--; window.renderApp();}" class="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 shadow-sm transition-colors shrink-0"><i class="ph ph-minus"></i></button>
+                                    <button onclick="window.decrementCalcLegs()" class="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 shadow-sm transition-colors shrink-0"><i class="ph ph-minus"></i></button>
                                     <input type="number" inputmode="numeric" value="${state.calcLegs}" onblur="window.setCalcLegs(this.value)" onkeydown="if(event.key === 'Enter') this.blur()" class="w-12 text-center font-bold text-blue-600 bg-white border border-gray-200 rounded-md py-1 outline-none focus:border-blue-500 shadow-inner" style="-moz-appearance: textfield;" />
-                                    <button onclick="if(state.calcLegs<49-state.calcBankers){state.calcLegs++; window.renderApp();}" class="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 shadow-sm transition-colors shrink-0"><i class="ph ph-plus"></i></button>
+                                    <button onclick="window.incrementCalcLegs()" class="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 shadow-sm transition-colors shrink-0"><i class="ph ph-plus"></i></button>
                                 </div>
                             </div>
                             
@@ -1059,19 +1081,54 @@
             renderApp();
         };
 
+        window.incrementCalcBankers = () => {
+            const max = state.calcLegs === 0 ? 49 : 5;
+            if (state.calcBankers < max) {
+                state.calcBankers++;
+                renderApp();
+            }
+        };
+
+        window.decrementCalcBankers = () => {
+            if (state.calcBankers > 0) {
+                state.calcBankers--;
+                renderApp();
+            }
+        };
+
         window.setCalcBankers = (val) => {
             let num = parseInt(val) || 0;
             if (num < 0) num = 0;
-            if (num > 5) num = 5;
+            const max = state.calcLegs === 0 ? 49 : 5;
+            if (num > max) num = max;
             state.calcBankers = num;
-            // 修正腳數以避免超過上限
             if (state.calcLegs > 49 - num) state.calcLegs = 49 - num;
             renderApp();
+        };
+
+        window.incrementCalcLegs = () => {
+            if (state.calcBankers > 5) {
+                state.calcBankers = 5;
+                state.calcLegs = 1;
+            } else if (state.calcLegs < 49 - state.calcBankers) {
+                state.calcLegs++;
+            }
+            renderApp();
+        };
+
+        window.decrementCalcLegs = () => {
+            if (state.calcLegs > 0) {
+                state.calcLegs--;
+                renderApp();
+            }
         };
 
         window.setCalcLegs = (val) => {
             let num = parseInt(val) || 0;
             if (num < 0) num = 0;
+            if (num > 0 && state.calcBankers > 5) {
+                state.calcBankers = 5;
+            }
             if (num > 49 - state.calcBankers) num = 49 - state.calcBankers;
             state.calcLegs = num;
             renderApp();
@@ -1084,6 +1141,14 @@
             .animate-fade-in { animation: fadeIn 0.2s ease-out forwards; }
         `;
         document.head.appendChild(style);
+
+        // 徹底防止 iOS / iPad 快速點擊放大及手勢放大
+        document.addEventListener('gesturestart', function (e) {
+            e.preventDefault();
+        });
+        document.addEventListener('dblclick', function (e) {
+            e.preventDefault();
+        });
 
         // Initial Render
         renderApp();
