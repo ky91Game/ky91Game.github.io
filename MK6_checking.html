@@ -10,9 +10,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         html {
-            /* 動態視窗比例縮放：手機維持 16px，隨螢幕加寬平滑放大，最高限制至 24px (1.5倍大) */
-            font-size: clamp(16px, 2.5vw, 24px);
+            /* 預設標準 16px */
+            font-size: 16px;
             touch-action: manipulation;
+        }
+        /* 針對 iPad 等平板直向 (Portrait)，高度充裕 (>= 850px) 時適度放大約 1.15 倍 (約 18-19px)，清晰且比例舒適 */
+        @media screen and (min-width: 641px) and (min-height: 850px) and (orientation: portrait) {
+            html {
+                font-size: clamp(16px, 2vw, 19px);
+            }
+        }
+        /* 電腦桌面 / 橫向螢幕 (Landscape)：鎖定 16px */
+        @media screen and (min-width: 1025px), (orientation: landscape) {
+            html {
+                font-size: 16px;
+            }
+        }
+        /* 筆電或較矮螢幕 (高度 <= 750px)：微調為 15px，釋放最多垂直可視範圍 */
+        @media screen and (max-height: 750px) {
+            html {
+                font-size: 15px;
+            }
         }
         body {
             font-family: 'Inter', sans-serif;
@@ -357,40 +375,40 @@
 
         // --- Main Views ---
         const renderHeader = () => `
-            <div class="bg-[#003B71] text-white pt-10 pb-4 px-5 rounded-b-3xl shadow-lg shrink-0 z-20">
-                <div class="flex items-center justify-between mb-4">
+            <div class="bg-[#003B71] text-white pt-5 pb-3 px-4 rounded-b-2xl shadow-lg shrink-0 z-20">
+                <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                            <div class="w-7 h-7 border-2 border-[#003B71] rounded-full flex items-center justify-center text-[#003B71] font-black text-sm relative">
-                                <div class="absolute -top-0.5 -left-0.5 w-2 h-2 bg-[#003B71] rounded-full"></div>
-                                <div class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#003B71] rounded-full"></div>
-                                <div class="absolute -bottom-0.5 -left-0.5 w-2 h-2 bg-[#003B71] rounded-full"></div>
-                                <div class="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-[#003B71] rounded-full"></div>
+                        <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center">
+                            <div class="w-6 h-6 border-2 border-[#003B71] rounded-full flex items-center justify-center text-[#003B71] font-black text-xs relative">
+                                <div class="absolute -top-0.5 -left-0.5 w-1.5 h-1.5 bg-[#003B71] rounded-full"></div>
+                                <div class="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-[#003B71] rounded-full"></div>
+                                <div class="absolute -bottom-0.5 -left-0.5 w-1.5 h-1.5 bg-[#003B71] rounded-full"></div>
+                                <div class="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 bg-[#003B71] rounded-full"></div>
                                 6
                             </div>
                         </div>
-                        <h1 class="text-xl font-bold tracking-wide">六合彩對獎小工具</h1>
+                        <h1 class="text-lg font-bold tracking-wide">六合彩對獎小工具</h1>
                     </div>
                 </div>
             </div>
         `;
 
         const renderNav = () => `
-            <div class="bg-white border-t flex justify-around p-2 shrink-0 pb-6 shadow-[0_-4px_15px_rgba(0,0,0,0.03)] z-20">
-                <button onclick="window.changeTab('check')" class="flex flex-col items-center p-2 w-16 ${state.activeTab === 'check' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
-                    <i class="${state.activeTab === 'check' ? 'ph-fill' : 'ph'} ph-check-circle text-2xl mb-1"></i>
+            <div class="bg-white border-t flex justify-around p-1.5 shrink-0 pb-3 sm:pb-3 shadow-[0_-4px_15px_rgba(0,0,0,0.03)] z-20">
+                <button onclick="window.changeTab('check')" class="flex flex-col items-center p-1.5 w-16 ${state.activeTab === 'check' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
+                    <i class="${state.activeTab === 'check' ? 'ph-fill' : 'ph'} ph-check-circle text-2xl mb-0.5"></i>
                     <span class="text-[0.625rem] font-medium">核對彩票</span>
                 </button>
-                <button onclick="window.changeTab('register')" class="flex flex-col items-center p-2 w-16 ${state.activeTab === 'register' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
-                    <i class="${state.activeTab === 'register' ? 'ph-fill' : 'ph'} ph-ticket text-2xl mb-1"></i>
+                <button onclick="window.changeTab('register')" class="flex flex-col items-center p-1.5 w-16 ${state.activeTab === 'register' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
+                    <i class="${state.activeTab === 'register' ? 'ph-fill' : 'ph'} ph-ticket text-2xl mb-0.5"></i>
                     <span class="text-[0.625rem] font-medium">登記彩票</span>
                 </button>
-                <button onclick="window.changeTab('favorites')" class="flex flex-col items-center p-2 w-16 ${state.activeTab === 'favorites' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
-                    <i class="${state.activeTab === 'favorites' ? 'ph-fill' : 'ph'} ph-heart text-2xl mb-1"></i>
+                <button onclick="window.changeTab('favorites')" class="flex flex-col items-center p-1.5 w-16 ${state.activeTab === 'favorites' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
+                    <i class="${state.activeTab === 'favorites' ? 'ph-fill' : 'ph'} ph-heart text-2xl mb-0.5"></i>
                     <span class="text-[0.625rem] font-medium">我的最愛</span>
                 </button>
-                <button onclick="window.changeTab('calc')" class="flex flex-col items-center p-2 w-16 ${state.activeTab === 'calc' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
-                    <i class="${state.activeTab === 'calc' ? 'ph-fill' : 'ph'} ph-calculator text-2xl mb-1"></i>
+                <button onclick="window.changeTab('calc')" class="flex flex-col items-center p-1.5 w-16 ${state.activeTab === 'calc' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
+                    <i class="${state.activeTab === 'calc' ? 'ph-fill' : 'ph'} ph-calculator text-2xl mb-0.5"></i>
                     <span class="text-[0.625rem] font-medium">注數表</span>
                 </button>
             </div>
@@ -559,7 +577,7 @@
                         ` : ''}
                     </div>
 
-                    <div class="p-4 overflow-y-auto flex-1 hide-scrollbar pb-40">
+                    <div class="p-4 overflow-y-auto flex-1 hide-scrollbar pb-28">
                         <div class="flex p-1 bg-gray-100 rounded-lg mb-4">
                             <button onclick="window.setRegType('single')" class="flex-1 py-2 text-sm font-bold rounded-md transition-all ${state.regType === 'single' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}">單式</button>
                             <button onclick="window.setRegType('multiple')" class="flex-1 py-2 text-sm font-bold rounded-md transition-all ${state.regType === 'multiple' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}">複式</button>
@@ -652,25 +670,25 @@
                         </div>
                     </div>
 
-                    <div class="absolute bottom-0 left-0 w-full bg-white border-t p-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-10 pb-6">
-                        <div class="flex justify-between items-center mb-3">
-                            <div>
-                                <div class="text-sm text-gray-500">總注數: <span class="font-bold text-gray-800">${combos}</span></div>
-                                <div class="text-sm text-gray-500">總金額: <span class="font-bold text-[#003B71] text-lg">$${totalCost}</span></div>
+                    <div class="absolute bottom-0 left-0 w-full bg-white border-t p-3 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-10 pb-3">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-baseline space-x-2">
+                                <span class="text-xs text-gray-500">總注數: <b class="text-gray-800 text-sm">${combos}</b></span>
+                                <span class="text-xs text-gray-300">|</span>
+                                <span class="text-xs text-gray-500">總金額: <b class="text-[#003B71] text-base">$${totalCost}</b></span>
                             </div>
                             ${state.regIsShared && totalCost > 0 ? `
-                                <div class="text-right">
-                                    <div class="text-xs text-gray-400">每人需付</div>
-                                    <div class="font-bold text-gray-800">$${(totalCost / state.regPeopleCount).toFixed(1)}</div>
+                                <div class="text-xs text-gray-700 font-bold bg-gray-100 px-2 py-0.5 rounded">
+                                    每人 $${(totalCost / state.regPeopleCount).toFixed(1)}
                                 </div>
                             ` : ''}
                         </div>
                         <button 
                             onclick="window.saveTicket()"
                             ${combos === 0 ? 'disabled' : ''} 
-                            class="w-full py-3.5 rounded-xl font-bold transition-all shadow-md flex justify-center items-center ${combos > 0 ? 'bg-[#003B71] hover:bg-blue-900 text-yellow-400' : 'bg-gray-300 text-white'}"
+                            class="w-full py-2.5 rounded-xl font-bold text-sm transition-all shadow flex justify-center items-center ${combos > 0 ? 'bg-[#003B71] hover:bg-blue-900 text-yellow-400' : 'bg-gray-300 text-white'}"
                         >
-                            ${state.editingId ? '<i class="ph ph-floppy-disk mr-2 text-lg"></i> 儲存修改' : '<i class="ph ph-check-circle mr-2 text-lg"></i> 確認登記'}
+                            ${state.editingId ? '<i class="ph ph-floppy-disk mr-1.5 text-base"></i> 儲存修改' : '<i class="ph ph-check-circle mr-1.5 text-base"></i> 確認登記'}
                         </button>
                     </div>
                 </div>
