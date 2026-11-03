@@ -9,6 +9,10 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        html {
+            /* 動態視窗比例縮放：手機維持 16px，隨螢幕加寬自動放大，最高限制至 32px (兩倍大) */
+            font-size: clamp(16px, 3vw + 2px, 32px);
+        }
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
@@ -16,14 +20,14 @@
         }
         /* Custom scrollbar for a cleaner look */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 0.4rem;
         }
         ::-webkit-scrollbar-track {
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
-            border-radius: 10px;
+            border-radius: 1rem;
         }
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
@@ -52,9 +56,9 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background-image: radial-gradient(circle at 5px 0, transparent 6px, #f9fafb 7px);
-            background-size: 14px 10px;
+            height: 0.25rem;
+            background-image: radial-gradient(circle at 0.3125rem 0, transparent 0.375rem, #f9fafb 0.4375rem);
+            background-size: 0.875rem 0.625rem;
             background-repeat: repeat-x;
             transform: translateY(-100%);
         }
@@ -282,8 +286,8 @@
                     <div class="flex justify-between items-start mb-1">
                         <div class="flex items-center space-x-2 w-full pr-2">
                             <span class="font-bold text-sm px-2 py-0.5 rounded shrink-0 ${isDead ? 'bg-gray-200 text-gray-500' : 'bg-gray-100 text-gray-700'}">${typeName}</span>
-                            ${ticket.drawPeriod ? `<span class="text-[12px] font-bold px-1.5 py-0.5 rounded shrink-0 ${isDead ? 'bg-gray-200 text-gray-500' : 'bg-blue-50 text-blue-600'}">${ticket.drawPeriod}</span>` : ''}
-                            ${ticket.remarks ? `<span class="text-[13px] font-bold truncate max-w-[150px] ${isDead ? 'text-gray-500' : 'text-gray-800'}">${ticket.remarks}</span>` : ''}
+                            ${ticket.drawPeriod ? `<span class="text-[0.75rem] font-bold px-1.5 py-0.5 rounded shrink-0 ${isDead ? 'bg-gray-200 text-gray-500' : 'bg-blue-50 text-blue-600'}">${ticket.drawPeriod}</span>` : ''}
+                            ${ticket.remarks ? `<span class="text-[0.8125rem] font-bold truncate max-w-[9.5rem] ${isDead ? 'text-gray-500' : 'text-gray-800'}">${ticket.remarks}</span>` : ''}
                         </div>
                         <div class="flex space-x-1 shrink-0 bg-gray-50 rounded-lg p-0.5 z-10">
                             <button onclick="window.toggleFavorite('${ticket.id}')" class="p-1.5 rounded-md transition-colors ${ticket.isFavorite ? 'text-red-500' : 'text-gray-400 hover:text-red-400'}">
@@ -325,7 +329,7 @@
                                 <span class="text-sm mr-1">獎金約:</span> $${ticket.totalPrize.toLocaleString()}
                             </div>
                             ${(ticket.tierCounts[1] || ticket.tierCounts[2] || ticket.tierCounts[3]) ? `
-                                <div class="text-[10px] text-yellow-600 mt-1">*頭獎至三獎金額為系統預設估算</div>
+                                <div class="text-[0.625rem] text-yellow-600 mt-1">*頭獎至三獎金額為系統預設估算</div>
                             ` : ''}
                         </div>
                     ` : ''}
@@ -363,19 +367,19 @@
             <div class="bg-white border-t flex justify-around p-2 shrink-0 pb-6 shadow-[0_-4px_15px_rgba(0,0,0,0.03)] z-20">
                 <button onclick="window.changeTab('check')" class="flex flex-col items-center p-2 w-16 ${state.activeTab === 'check' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
                     <i class="${state.activeTab === 'check' ? 'ph-fill' : 'ph'} ph-check-circle text-2xl mb-1"></i>
-                    <span class="text-[10px] font-medium">核對彩票</span>
+                    <span class="text-[0.625rem] font-medium">核對彩票</span>
                 </button>
                 <button onclick="window.changeTab('register')" class="flex flex-col items-center p-2 w-16 ${state.activeTab === 'register' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
                     <i class="${state.activeTab === 'register' ? 'ph-fill' : 'ph'} ph-ticket text-2xl mb-1"></i>
-                    <span class="text-[10px] font-medium">登記彩票</span>
+                    <span class="text-[0.625rem] font-medium">登記彩票</span>
                 </button>
                 <button onclick="window.changeTab('favorites')" class="flex flex-col items-center p-2 w-16 ${state.activeTab === 'favorites' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
                     <i class="${state.activeTab === 'favorites' ? 'ph-fill' : 'ph'} ph-heart text-2xl mb-1"></i>
-                    <span class="text-[10px] font-medium">我的最愛</span>
+                    <span class="text-[0.625rem] font-medium">我的最愛</span>
                 </button>
                 <button onclick="window.changeTab('calc')" class="flex flex-col items-center p-2 w-16 ${state.activeTab === 'calc' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}">
                     <i class="${state.activeTab === 'calc' ? 'ph-fill' : 'ph'} ph-calculator text-2xl mb-1"></i>
-                    <span class="text-[10px] font-medium">注數表</span>
+                    <span class="text-[0.625rem] font-medium">注數表</span>
                 </button>
             </div>
         `;
@@ -555,7 +559,7 @@
                                 <div class="flex justify-between items-center mb-2">
                                     <label class="text-sm font-bold text-gray-700">選擇號碼</label>
                                     <div class="flex items-center space-x-2">
-                                        <button onclick="window.clearRegNumbers()" class="text-[10px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md font-bold hover:bg-gray-200 transition-colors shadow-sm tracking-widest">重設</button>
+                                        <button onclick="window.clearRegNumbers()" class="text-[0.625rem] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md font-bold hover:bg-gray-200 transition-colors shadow-sm tracking-widest">重設</button>
                                         <span class="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">${state.regNumbers.length} / ${state.regType === 'single' ? 6 : 49}</span>
                                     </div>
                                 </div>
@@ -566,7 +570,7 @@
                                 <div class="flex justify-between items-center mb-2">
                                     <label class="text-sm font-bold text-gray-700">選擇「膽」 (1-5個)</label>
                                     <div class="flex items-center space-x-2">
-                                        <button onclick="window.clearRegBankers()" class="text-[10px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md font-bold hover:bg-gray-200 transition-colors shadow-sm tracking-widest">重設</button>
+                                        <button onclick="window.clearRegBankers()" class="text-[0.625rem] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md font-bold hover:bg-gray-200 transition-colors shadow-sm tracking-widest">重設</button>
                                         <span class="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">${state.regBankers.length} / 5</span>
                                     </div>
                                 </div>
@@ -577,8 +581,8 @@
                             <div class="flex justify-between items-center mb-2">
                                 <label class="text-sm font-bold text-gray-700">選擇「腳」</label>
                                 <div class="flex items-center space-x-2">
-                                    <button onclick="window.clearRegLegs()" class="text-[10px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md font-bold hover:bg-gray-200 transition-colors shadow-sm tracking-widest">重設</button>
-                                    <button onclick="window.selectAllLegs()" class="text-[10px] bg-blue-100 text-blue-700 px-2.5 py-1 rounded-md font-bold hover:bg-blue-200 transition-colors shadow-sm tracking-widest">全餐</button>
+                                    <button onclick="window.clearRegLegs()" class="text-[0.625rem] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md font-bold hover:bg-gray-200 transition-colors shadow-sm tracking-widest">重設</button>
+                                    <button onclick="window.selectAllLegs()" class="text-[0.625rem] bg-blue-100 text-blue-700 px-2.5 py-1 rounded-md font-bold hover:bg-blue-200 transition-colors shadow-sm tracking-widest">全餐</button>
                                     <span class="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">${state.regLegs.length}</span>
                                 </div>
                             </div>
